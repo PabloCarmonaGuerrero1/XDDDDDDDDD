@@ -36,6 +36,7 @@ fun App() {
             var contraseña by remember { mutableStateOf("") }
             var ic by remember { mutableStateOf(false) }
             var contadorclicks=0
+            var registro by remember { mutableStateOf(false) }
             MaterialTheme {
                 Column(
                     modifier = Modifier
@@ -57,22 +58,47 @@ fun App() {
                         label = { Text("Contraseña") },
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Button(onClick = { ic = iniciarsesion(usuario,contraseña) }) {
+                    Button(onClick = { ic = iniciarsesion(usuario,contraseña) ;  contadorclicks++ ; registro=true }) {
                         Text("Iniciar")
-                        contadorclicks++
 
                     }
-                    if (contadorclicks>0 && ic==false) {
-                        Text("Error")
+                    if (registro==true){
+                        if (contadorclicks>0 && ic==false && usuario.isNotBlank() && contraseña.isNotBlank()) {
+                            Text("Error")
+                        }
+                        else if(contadorclicks>0 && ic==true && usuario.isNotBlank() && contraseña.isNotBlank()){
+                            paginaactual="Registrado"
+                        }
                     }
                 }
 
             }
         }
+        "Registrado"->MaterialTheme{
+            var si by remember { mutableStateOf("SI") }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Tienda de videojuegos", modifier = Modifier.padding(bottom = 16.dp))
+                OutlinedTextField(
+                    value = si,
+                    onValueChange = {   si= it },
+                    label = { Text("Nombre de usuario") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        }
+
+
+
+
+
+
     }
-
-
-
 }
 fun iniciarsesion(nombre: String, contrasena: String): Boolean {
     val url = "jdbc:oracle:thin:@localhost:1521:xe"
@@ -97,7 +123,6 @@ fun iniciarsesion(nombre: String, contrasena: String): Boolean {
     conn.close()
     return resultado
 }
-
 
 
 
