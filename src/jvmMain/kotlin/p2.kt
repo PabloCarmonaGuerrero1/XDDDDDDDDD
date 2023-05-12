@@ -64,18 +64,21 @@ fun App() {
                     }
                     if (registro==true){
                         if (contadorclicks>0 && ic==false && usuario.isNotBlank() && contraseña.isNotBlank()) {
-                            Text("Error")
+                            Text("ERROR USUARIO NO ENCONTRADO")
                         }
                         else if(contadorclicks>0 && ic==true && usuario.isNotBlank() && contraseña.isNotBlank()){
                             paginaactual="Registrado"
                         }
+                    }
+                    Button(onClick = { paginaactual="Registrar" }) {
+                        Text("Registrar")
+
                     }
                 }
 
             }
         }
         "Registrado"->MaterialTheme{
-            var si by remember { mutableStateOf("SI") }
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -83,23 +86,78 @@ fun App() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Tienda de videojuegos", modifier = Modifier.padding(bottom = 16.dp))
-                OutlinedTextField(
-                    value = si,
-                    onValueChange = {   si= it },
-                    label = { Text("Nombre de usuario") },
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Text("Elige lo que quieres hacer", modifier = Modifier.padding(bottom = 16.dp))
+                Button(onClick = { paginaactual="Devolver libro" }) {
+                    Text("Devolver película")
+
+                }
+                Button(onClick = { paginaactual="Devolver libro" }) {
+                    Text("Devolver película")
+
+                }
+                Button(onClick = { paginaactual="Devolver libro" }) {
+                    Text("Devolver película")
+
+                }
             }
         }
+        "Registrar"-> MaterialTheme {
+            var usuario by remember { mutableStateOf("") }
+            var contraseña by remember { mutableStateOf("") }
+            var repetir by remember { mutableStateOf("") }
+            var registrado by remember { mutableStateOf(false) }
+            var registro by remember { mutableStateOf(false) }
+            MaterialTheme{
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("Crea tu usuario!!", modifier = Modifier.padding(bottom = 16.dp))
+                    OutlinedTextField(
+                        value = usuario,
+                        onValueChange = { usuario = it },
+                        label = { Text("Nombre de usuario") },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    OutlinedTextField(
+                        value = contraseña,
+                        onValueChange = { contraseña = it },
+                        label = { Text("Contraseña") },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    OutlinedTextField(
+                        value = repetir,
+                        onValueChange = { repetir = it },
+                        label = { Text("Repetir contraseñna") },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Button(onClick = { registrado = crearusuario(usuario,contraseña,repetir) ; registro = true }) {
+                        Text("Crear usuario")
+
+                    }
+                    if (registro==true){
+                        if ( registrado==false && usuario.isNotBlank() && contraseña.isNotBlank()) {
+                            Text("ERROR LAS CONTRASEÑAS NO COINCIDEN")
+                        }
+                        else if(registrado==true && usuario.isNotBlank() && contraseña.isNotBlank()){
+                            paginaactual="Inicio"
+                        }
+                    }
+                    Button(onClick = { paginaactual="Inicio" }) {
+                        Text("Volver atrás")
+
+                    }
+                }
+            }
 
 
-
-
-
-
+        }
     }
 }
+
 fun iniciarsesion(nombre: String, contrasena: String): Boolean {
     val url = "jdbc:oracle:thin:@localhost:1521:xe"
     val usuario = "alumno"
@@ -123,7 +181,23 @@ fun iniciarsesion(nombre: String, contrasena: String): Boolean {
     conn.close()
     return resultado
 }
-
+fun crearusuario(nombre: String,contrasena: String,repetir:String):Boolean {
+    var resultado = false
+    val url = "jdbc:oracle:thin:@localhost:1521:xe"
+    val usuario = "alumno"
+    val contraseña = "alumno"
+    Class.forName("oracle.jdbc.driver.OracleDriver")
+    val conexion = DriverManager.getConnection(url, usuario, contraseña)
+    val stmt = conexion.prepareStatement("INSERT INTO Usuarios  (name,password) VALUES (?,?)")
+    if (contrasena==repetir){
+        stmt.setString(1, nombre)
+        stmt.setString(2, contrasena)
+        stmt.executeUpdate()
+        conexion.close()
+        resultado = true
+    }
+    return  resultado
+}
 
 
 
