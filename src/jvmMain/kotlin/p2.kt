@@ -190,9 +190,9 @@ fun App() {
             }
         }
         "Comprar"-> MaterialTheme {
-            var usuario = user
             var titulo by remember { mutableStateOf("") }
             var compra by remember { mutableStateOf(false) }
+            var confi by remember { mutableStateOf(false) }
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -206,16 +206,19 @@ fun App() {
                     label = { Text("Título del juego") },
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Button(onClick = { compra=comprarjuego(user,titulo) }) {
+                Button(onClick = { compra=comprarjuego(user,titulo) ; confi = true }) {
                     Text("Comprar")
 
                 }
-                if (compra==true){
-                    Text("Juego comprado con éxito!!")
+                if(confi==true){
+                    if (compra==true){
+                        Text("Juego comprado con éxito!!")
+                    }
+                    else{
+                        Text("ERROR JUEGO DESCONOCIDO O ESCRITO ERRONEAMENTE")
+                    }
                 }
-                else{
-                    Text("ERROR JUEGO DESCONOCIDO O ESCRITO ERRONEAMENTE")
-                }
+
             }
             Button(onClick = { paginaactual="Registrado" }) {
                 Text("Volver atrás")
