@@ -23,11 +23,7 @@ fun main() {
 
 
         val stmt = conexion.prepareStatement("INSERT INTO LIBRO  (book_id , title , year ) VALUES (?, ?, ?)")
-
-
         // val stmt = conn.prepareStatement("INSERT INTO LIBRO  (book_id , title , `year` ) VALUES ("+1+",el señor de las moscas,+ "+1950+"))"
-
-
         stmt.setInt(1, 1)
         stmt.setString(2, "el señor de las moscas")
         stmt.setInt(3, 1950)
