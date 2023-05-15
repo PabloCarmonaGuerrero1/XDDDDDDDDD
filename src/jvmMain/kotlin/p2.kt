@@ -189,6 +189,39 @@ fun App() {
 
             }
         }
+        "Comprar"-> MaterialTheme {
+            var usuario = user
+            var titulo by remember { mutableStateOf("") }
+            var compra by remember { mutableStateOf(false) }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                OutlinedTextField(
+                    value = titulo,
+                    onValueChange = { titulo = it },
+                    label = { Text("Título del juego") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Button(onClick = { compra=comprarjuego(user,titulo) }) {
+                    Text("Comprar")
+
+                }
+                if (compra==true){
+                    Text("Juego comprado con éxito!!")
+                }
+                else{
+                    Text("ERROR JUEGO DESCONOCIDO O ESCRITO ERRONEAMENTE")
+                }
+            }
+            Button(onClick = { paginaactual="Registrado" }) {
+                Text("Volver atrás")
+
+            }
+        }
     }
 }
 
@@ -231,6 +264,32 @@ fun crearusuario(nombre: String,contrasena: String,repetir:String):Boolean {
         resultado = true
     }
     return  resultado
+}
+fun comprarjuego(name:String,juego:String):Boolean{
+    val url = "jdbc:oracle:thin:@localhost:1521:xe"
+    val usuario = "alumno"
+    val contraseña = "alumno"
+    Class.forName("oracle.jdbc.driver.OracleDriver")
+    val conexion = DriverManager.getConnection(url, usuario, contraseña)
+    val verificarStmt = conexion.prepareStatement("SELECT COUNT(*) FROM Videojuegos WHERE titulo = ?")
+    verificarStmt.setString(1, juego)
+    val resultado = verificarStmt.executeQuery()
+    resultado.next()
+    val existeJuego = resultado.getInt(1) > 0
+
+    if (!existeJuego) {
+        conexion.close()
+        return false
+    }
+    val stmt = conexion.prepareStatement("INSERT INTO Compras  (name,titulo) VALUES (?,?)")
+    stmt.setString(1, name)
+    stmt.setString(2, juego)
+    stmt.executeUpdate()
+    val sql = conexion.prepareStatement("DELETE FROM Videojuegos WHERE titulo = ? ")
+    sql.setString(1, juego)
+    sql.executeUpdate()
+    conexion.close()
+    return true
 }
 //CREATE TABLE videojuegos (
 //    titulo VARCHAR2(255),
