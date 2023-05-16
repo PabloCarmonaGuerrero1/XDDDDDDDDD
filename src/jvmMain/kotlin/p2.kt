@@ -243,7 +243,7 @@ fun App() {
                     label = { Text("Título del juego") },
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Button(onClick = { devolver=devolverjuego(user,titulo) ; confi = true }) {
+                Button(onClick = { devolver=devolverJuego(user,titulo) ; confi = true }) {
                     Text("Devolver")
 
                 }
@@ -337,40 +337,52 @@ fun comprarjuego(name:String,juego:String):Boolean{
     conexion.close()
     return true
 }
-fun devolverjuego(name:String,juego:String):Boolean{
+fun devolverJuego(name: String, juego: String): Boolean {
     val url = "jdbc:oracle:thin:@localhost:1521:xe"
     val usuario = "alumno"
     val contraseña = "alumno"
     Class.forName("oracle.jdbc.driver.OracleDriver")
     val conexion = DriverManager.getConnection(url, usuario, contraseña)
-    val verificarStmt = conexion.prepareStatement("SELECT COUNT(*) FROM Compras WHERE titulo = ?")
-    verificarStmt.setString(1, juego)
-    val resultado = verificarStmt.executeQuery()
-    resultado.next()
-    val existeJuego = resultado.getInt(1) > 0
-    val verificarusuario = conexion.prepareStatement("SELECT name FROM Usuarios WHERE name = ?")
-    verificarusuario.setString(1, name)
-    val resultSet = verificarusuario.executeQuery()
-    if (!resultSet.next()){
-        conexion.close()
-        return false
+
+
+    val query = "SELECT * FROM Compras"
+    val statement = conexion.prepareStatement(query)
+
+    val resultSet = statement.executeQuery()
+    while (resultSet.next()) {
+        val nom = resultSet.getString("name")
+        val cont= resultSet.getString("titulo")
+        if (nom==name && cont== juego) {
+            val juegos = conexion.prepareStatement("SELECT titulo, desarrollador, plataforma, fecha_lanzamiento, precio FROM Videojuegos2 WHERE titulo = ?")
+            juegos.setString(1, juego)
+            val anyadir = juegos.executeQuery()
+
+            if (anyadir.next()) {
+                val desall = anyadir.getString("desarrollador")
+                val plat = anyadir.getString("plataforma")
+                val fecha = anyadir.getDate("fecha_lanzamiento")
+                val precio = anyadir.getDouble("precio")
+
+                val stmt = conexion.prepareStatement("INSERT INTO Videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio) VALUES (?, ?, ?, ?, ?)")
+                stmt.setString(1, juego)
+                stmt.setString(2, desall)
+                stmt.setString(3, plat)
+                stmt.setDate(4, fecha)
+                stmt.setDouble(5, precio)
+                stmt.executeUpdate()
+
+                val sql = conexion.prepareStatement("DELETE FROM Compras WHERE titulo = ?")
+                sql.setString(1, juego)
+                sql.executeUpdate()
+            }
+
+            conexion.close()
+            return true
+        }
     }
-    if (!existeJuego) {
-        conexion.close()
-        return false
-    }
-    val stmt = conexion.prepareStatement("INSERT INTO Videojuegos  (titulo,desarrollador,plataforma,fecha_lanzamiento,precio) VALUES (?,?,?,?,?)")
-    stmt.setString(1, juego)
-    stmt.setString(2, juego)
-    stmt.setString(2, juego)
-    stmt.setDate(2, )
-    stmt.setString(2, juego)
-    stmt.executeUpdate()
-    val sql = conexion.prepareStatement("DELETE FROM Compras WHERE titulo = ? ")
-    sql.setString(1, juego)
-    sql.executeUpdate()
     conexion.close()
-    return true
+    return false
+
 }
 fun listadejuegos():MutableList<String>{
     var lista = mutableListOf<String>()
