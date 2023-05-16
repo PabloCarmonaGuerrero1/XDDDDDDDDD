@@ -96,6 +96,10 @@ fun App() {
                     Text("Devolver un videojuego")
 
                 }
+                Button(onClick = { paginaactual="Mostrar2" }) {
+                    Text("Mostrar")
+
+                }
                 Button(onClick = { paginaactual="Inicio" }) {
                     Text("Volver atrás")
 
@@ -262,6 +266,51 @@ fun App() {
 
             }
         }
+        "Mostrar2"-> MaterialTheme {
+            var titulo by remember { mutableStateOf("") }
+            var lista = listadejuegos()
+            var i = 0
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                val url = "jdbc:oracle:thin:@localhost:1521:XE"
+                val username = "alumno"
+                val password = "alumno"
+
+                val connection = DriverManager.getConnection(url, username, password)
+
+                val query = "SELECT * FROM Videojuegos where titulo = ?"
+                val preparedStatement = connection.prepareStatement(query)
+                preparedStatement.setString(1, lista[i])
+                val resultSet = preparedStatement.executeQuery()
+                Text("Nombre de los juegos disponibles")
+                Text("--------------------------------")
+                while (resultSet.next()) {
+                    val nombre = resultSet.getString("titulo")
+                    Text("$nombre")
+                }
+
+                resultSet.close()
+                preparedStatement.close()
+                connection.close()
+            }
+            Button(onClick = { i++ }) {
+                Text("Siguiente")
+
+            }
+            Button(onClick = { i-- }) {
+                Text("Anterior")
+
+            }
+            Button(onClick = { paginaactual="Registrado" }) {
+                Text("Volver atrás")
+
+            }
+        }
     }
 }
 
@@ -386,7 +435,17 @@ fun devolverJuego(name: String, juego: String): Boolean {
 }
 fun listadejuegos():MutableList<String>{
     var lista = mutableListOf<String>()
-
+    val url = "jdbc:oracle:thin:@localhost:1521:xe"
+    val usuario = "alumno"
+    val contraseña = "alumno"
+    Class.forName("oracle.jdbc.driver.OracleDriver")
+    val conexion = DriverManager.getConnection(url, usuario, contraseña)
+    val statement = conexion.prepareStatement("Select titulo from Videojuegos")
+    val resultSet = statement.executeQuery()
+    while (resultSet.next()) {
+        val titulo = resultSet.getString("titulo")
+        lista.add(titulo)
+    }
     return  lista
 }
 //CREATE TABLE videojuegos (
