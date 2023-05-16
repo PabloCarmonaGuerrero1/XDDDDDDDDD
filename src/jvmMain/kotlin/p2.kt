@@ -134,15 +134,15 @@ fun App() {
                         label = { Text("Repetir contraseñna") },
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Button(onClick = { registrado = crearusuario(usuario,contraseña,repetir) ; registro = true }) {
+                    Button(onClick = { registrado = crearUsuario(usuario,contraseña,repetir) ; registro = true }) {
                         Text("Crear usuario")
 
                     }
                     if (registro==true){
-                        if ( registrado==false && usuario.isNotBlank() && contraseña.isNotBlank()) {
-                            Text("ERROR LAS CONTRASEÑAS NO COINCIDEN")
+                        if ( registrado==false && usuario.isNotBlank()) {
+                            Text("ERROR LAS CONTRASEÑAS NO COINCIDEN , HAY ALGÚN APARTADO EN BLANCO O EL NOMBRE DE USUARIO YA ESTA REGISTRADO")
                         }
-                        else if(registrado==true && usuario.isNotBlank() && contraseña.isNotBlank()){
+                        else if(registrado==true && usuario.isNotBlank()){
                             paginaactual="Inicio"
                         }
                     }
@@ -251,22 +251,28 @@ fun iniciarsesion(nombre: String, contrasena: String): Boolean {
     conn.close()
     return resultado
 }
-fun crearusuario(nombre: String,contrasena: String,repetir:String):Boolean {
+fun crearUsuario(nombre: String, contrasena: String, repetir: String): Boolean {
     var resultado = false
     val url = "jdbc:oracle:thin:@localhost:1521:xe"
     val usuario = "alumno"
     val contraseña = "alumno"
     Class.forName("oracle.jdbc.driver.OracleDriver")
     val conexion = DriverManager.getConnection(url, usuario, contraseña)
-    val stmt = conexion.prepareStatement("INSERT INTO Usuarios  (name,password) VALUES (?,?)")
-    if (contrasena==repetir){
-        stmt.setString(1, nombre)
-        stmt.setString(2, contrasena)
-        stmt.executeUpdate()
-        conexion.close()
+
+    val verificarStmt = conexion.prepareStatement("SELECT name FROM Usuarios WHERE name = ?")
+    verificarStmt.setString(1, nombre)
+    val resultSet = verificarStmt.executeQuery()
+
+    if (!resultSet.next() && contrasena.isNotBlank() && contrasena == repetir) {
+        val insertStmt = conexion.prepareStatement("INSERT INTO Usuarios (name, password) VALUES (?, ?)")
+        insertStmt.setString(1, nombre)
+        insertStmt.setString(2, contrasena)
+        insertStmt.executeUpdate()
         resultado = true
     }
-    return  resultado
+
+    conexion.close()
+    return resultado
 }
 fun comprarjuego(name:String,juego:String):Boolean{
     val url = "jdbc:oracle:thin:@localhost:1521:xe"
