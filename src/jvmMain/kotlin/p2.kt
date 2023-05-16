@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.sql.DriverManager
+import java.sql.Date
 fun main()  = application {
     Window(onCloseRequest = ::exitApplication) {
         App()
@@ -215,7 +216,43 @@ fun App() {
                         Text("Juego comprado con éxito!!")
                     }
                     else{
-                        Text("ERROR JUEGO DESCONOCIDO O ESCRITO ERRONEAMENTE")
+                        Text("ERROR JUEGO NO DISPONIBLE O ESCRITO ERRONEAMENTE")
+                    }
+                }
+
+            }
+            Button(onClick = { paginaactual="Registrado" }) {
+                Text("Volver atrás")
+
+            }
+        }
+        "Devolver"-> MaterialTheme {
+            var titulo by remember { mutableStateOf("") }
+            var devolver by remember { mutableStateOf(false) }
+            var confi by remember { mutableStateOf(false) }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                OutlinedTextField(
+                    value = titulo,
+                    onValueChange = { titulo = it },
+                    label = { Text("Título del juego") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Button(onClick = { devolver=devolverjuego(user,titulo) ; confi = true }) {
+                    Text("Devolver")
+
+                }
+                if(confi==true){
+                    if (devolver==true){
+                        Text("Juego devuelto con éxito!!")
+                    }
+                    else{
+                        Text("ERROR JUEGO NO DISPONIBLE O ESCRITO ERRONEAMENTE")
                     }
                 }
 
@@ -300,6 +337,46 @@ fun comprarjuego(name:String,juego:String):Boolean{
     conexion.close()
     return true
 }
+fun devolverjuego(name:String,juego:String):Boolean{
+    val url = "jdbc:oracle:thin:@localhost:1521:xe"
+    val usuario = "alumno"
+    val contraseña = "alumno"
+    Class.forName("oracle.jdbc.driver.OracleDriver")
+    val conexion = DriverManager.getConnection(url, usuario, contraseña)
+    val verificarStmt = conexion.prepareStatement("SELECT COUNT(*) FROM Compras WHERE titulo = ?")
+    verificarStmt.setString(1, juego)
+    val resultado = verificarStmt.executeQuery()
+    resultado.next()
+    val existeJuego = resultado.getInt(1) > 0
+    val verificarusuario = conexion.prepareStatement("SELECT name FROM Usuarios WHERE name = ?")
+    verificarusuario.setString(1, name)
+    val resultSet = verificarusuario.executeQuery()
+    if (!resultSet.next()){
+        conexion.close()
+        return false
+    }
+    if (!existeJuego) {
+        conexion.close()
+        return false
+    }
+    val stmt = conexion.prepareStatement("INSERT INTO Videojuegos  (titulo,desarrollador,plataforma,fecha_lanzamiento,precio) VALUES (?,?,?,?,?)")
+    stmt.setString(1, juego)
+    stmt.setString(2, juego)
+    stmt.setString(2, juego)
+    stmt.setDate(2, )
+    stmt.setString(2, juego)
+    stmt.executeUpdate()
+    val sql = conexion.prepareStatement("DELETE FROM Compras WHERE titulo = ? ")
+    sql.setString(1, juego)
+    sql.executeUpdate()
+    conexion.close()
+    return true
+}
+fun listadejuegos():MutableList<String>{
+    var lista = mutableListOf<String>()
+
+    return  lista
+}
 //CREATE TABLE videojuegos (
 //    titulo VARCHAR2(255),
 //    desarrollador VARCHAR2(255),
@@ -307,3 +384,5 @@ fun comprarjuego(name:String,juego:String):Boolean{
 //    fecha_lanzamiento DATE,
 //    precio NUMBER(10,2)
 //);
+
+
