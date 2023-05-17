@@ -16,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.sql.DriverManager
 import java.sql.Date
+import java.text.ParseException
+import java.text.SimpleDateFormat
+
 fun main()  = application {
     Window(onCloseRequest = ::exitApplication) {
         App()
@@ -94,6 +97,10 @@ fun App() {
                 }
                 Button(onClick = { paginaactual="Devolver" }) {
                     Text("Devolver un videojuego")
+
+                }
+                Button(onClick = { paginaactual="Actualizar" }) {
+                    Text("Actualizar información")
 
                 }
                 Button(onClick = { paginaactual="Inicio" }) {
@@ -288,6 +295,68 @@ fun App() {
                 Text("Volver atrás")
             }
         }
+        "Actualizar"-> MaterialTheme {
+            var titulo by remember { mutableStateOf("") }
+            var desall by remember { mutableStateOf("") }
+            var plat by remember { mutableStateOf("") }
+            var precio by remember { mutableStateOf(0.0) }
+            var fecha by remember { mutableStateOf("") }
+            var actu by remember { mutableStateOf(false) }
+            var confi by remember { mutableStateOf(false) }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Actualiza un juego", modifier = Modifier.padding(bottom = 16.dp))
+                OutlinedTextField(
+                    value = titulo,
+                    onValueChange = { titulo = it },
+                    label = { Text("Titulo") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                OutlinedTextField(
+                    value = desall,
+                    onValueChange = { desall = it },
+                    label = { Text("Desarrollador") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                OutlinedTextField(
+                    value = plat,
+                    onValueChange = { plat = it },
+                    label = { Text("Plataforma") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                OutlinedTextField(
+                    value = precio.toString(),
+                    onValueChange = { precio = it.toDoubleOrNull() ?:0.0 },
+                    label = { Text("Precio") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                OutlinedTextField(
+                    value = fecha,
+                    onValueChange = { fecha = it },
+                    label = { Text("Fecha de lanzamiento") },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Button(onClick = { actu=actualizarVideojuego(titulo,desall,plat,fecha,precio) ; confi=true }) {
+                    Text("Actualizar")
+                }
+                if (confi==true) {
+                    if (actu == true) {
+                        Text("Juego actualizado con éxito!!")
+                    } else {
+                        Text("ERROR EL JUEGO NO EXISTE , ESTA MAL ESCRITO O ALGUN PARAMETRO NO ES CORRECTO CON LA BASE DE DATOS")
+                    }
+                }
+                Button(onClick = { paginaactual = "Registrado" }) {
+                    Text("Volver atrás")
+                }
+            }
+        }
+
 
     }
 }
@@ -422,3 +491,48 @@ fun listadejuegos():MutableList<String>{
     }
     return  lista
 }
+fun actualizarVideojuego(titulo: String, desarrollador: String, plataforma: String, fechaLanzamiento: String, precio: Double): Boolean {
+    val url = "jdbc:oracle:thin:@localhost:1521:xe"
+    val usuario = "alumno"
+    val contraseña = "alumno"
+    Class.forName("oracle.jdbc.driver.OracleDriver")
+    val conexion = DriverManager.getConnection(url, usuario, contraseña)
+    val verificarStmt = conexion.prepareStatement("SELECT COUNT(*) FROM Videojuegos WHERE titulo = ?")
+    verificarStmt.setString(1, titulo)
+    val resultado = verificarStmt.executeQuery()
+    resultado.next()
+    val existeJuego = resultado.getInt(1) > 0
+
+    if (!existeJuego) {
+        conexion.close()
+        return false
+    }
+
+    try {
+        val formatoFecha = SimpleDateFormat("yyyy-MM-dd")
+        val fecha = Date(formatoFecha.parse(fechaLanzamiento).time)
+
+        val consulta = "UPDATE videojuegos SET desarrollador = ?, plataforma = ?, fecha_lanzamiento = ?, precio = ? WHERE titulo = ?"
+        val declaracion = conexion.prepareStatement(consulta)
+        declaracion.setString(1, desarrollador)
+        declaracion.setString(2, plataforma)
+        declaracion.setDate(3, fecha)
+        declaracion.setDouble(4, precio)
+        declaracion.setString(5, titulo)
+        declaracion.executeUpdate()
+    } catch (e: ParseException) {
+        // Manejar el error de fecha incorrecta
+        println("Error: Fecha de lanzamiento incorrecta. Asegúrate de que la fecha esté en el formato correcto (yyyy-MM-dd).")
+        conexion.close()
+        return false
+    } catch (e: IllegalArgumentException) {
+        // Manejar el error de valor no válido en fechaLanzamiento
+        println("Error: Valor no válido en fecha de lanzamiento.")
+        conexion.close()
+        return false
+    }
+
+    conexion.close()
+    return true
+}
+
