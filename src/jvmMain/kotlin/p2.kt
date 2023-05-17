@@ -96,10 +96,6 @@ fun App() {
                     Text("Devolver un videojuego")
 
                 }
-                Button(onClick = { paginaactual="Mostrar2" }) {
-                    Text("Mostrar")
-
-                }
                 Button(onClick = { paginaactual="Inicio" }) {
                     Text("Volver atrás")
 
@@ -156,42 +152,6 @@ fun App() {
 
                     }
                 }
-            }
-
-
-        }
-        "Juegos"-> MaterialTheme {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-                val url = "jdbc:oracle:thin:@localhost:1521:XE"
-                val username = "alumno"
-                val password = "alumno"
-
-                val connection = DriverManager.getConnection(url, username, password)
-
-                val query = "SELECT * FROM Videojuegos"
-
-                val statement = connection.createStatement()
-                val resultSet = statement.executeQuery(query)
-                Text("Nombre de los juegos disponibles")
-                Text("--------------------------------")
-                while (resultSet.next()) {
-                    val nombre = resultSet.getString("titulo")
-                    Text("$nombre")
-                }
-
-                resultSet.close()
-                statement.close()
-                connection.close()
-            }
-            Button(onClick = { paginaactual="Registrado" }) {
-                Text("Volver atrás")
-
             }
         }
         "Comprar"-> MaterialTheme {
@@ -266,51 +226,69 @@ fun App() {
 
             }
         }
-        "Mostrar2"-> MaterialTheme {
-            var titulo by remember { mutableStateOf("") }
-            var lista = listadejuegos()
-            var i = 0
+        "Juegos"-> MaterialTheme {
+            val lista = remember { listadejuegos() }
+            var i by remember { mutableStateOf(0) }
+
             Column(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-            ){
+            ) {
                 val url = "jdbc:oracle:thin:@localhost:1521:XE"
                 val username = "alumno"
                 val password = "alumno"
-
                 val connection = DriverManager.getConnection(url, username, password)
+                if(i>lista.size - 1){
+                    i= 0
+                }
+                if(i<0){
+                    i= lista.size - 1
+                }
+                if (i in lista.indices) {
+                    val query = "SELECT * FROM Videojuegos WHERE titulo = ?"
+                    val preparedStatement = connection.prepareStatement(query)
+                    preparedStatement.setString(1, lista[i])
+                    val resultSet = preparedStatement.executeQuery()
 
-                val query = "SELECT * FROM Videojuegos where titulo = ?"
-                val preparedStatement = connection.prepareStatement(query)
-                preparedStatement.setString(1, lista[i])
-                val resultSet = preparedStatement.executeQuery()
-                Text("Nombre de los juegos disponibles")
-                Text("--------------------------------")
-                while (resultSet.next()) {
-                    val nombre = resultSet.getString("titulo")
-                    Text("$nombre")
+                    while (resultSet.next()) {
+                        val nombre = resultSet.getString("titulo")
+                        val desall = resultSet.getString("desarrollador")
+                        val plat = resultSet.getString("plataforma")
+                        val fecha = resultSet.getDate("fecha_lanzamiento")
+                        val precio = resultSet.getDouble("precio")
+                        Text("Título: $nombre")
+                        Text("Desarrollador: $desall")
+                        Text("Plataforma: $plat")
+                        Text("Fecha de lanzamiento: $fecha")
+                        Text("Precio: $precio")
+                    }
+
+                    resultSet.close()
+                    preparedStatement.close()
                 }
 
-                resultSet.close()
-                preparedStatement.close()
                 connection.close()
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Button(onClick = {  i++ }) {
+                        Text("Siguiente")
+                    }
+                    Button(onClick = {  i -- }) {
+                        Text("Anterior")
+                    }
+                }
             }
-            Button(onClick = { i++ }) {
-                Text("Siguiente")
-
-            }
-            Button(onClick = { i-- }) {
-                Text("Anterior")
-
-            }
-            Button(onClick = { paginaactual="Registrado" }) {
+            Button(onClick = { paginaactual = "Registrado" }) {
                 Text("Volver atrás")
-
             }
         }
+
     }
 }
 
@@ -356,7 +334,6 @@ fun crearUsuario(nombre: String, contrasena: String, repetir: String): Boolean {
         insertStmt.executeUpdate()
         resultado = true
     }
-
     conexion.close()
     return resultado
 }
@@ -393,7 +370,6 @@ fun devolverJuego(name: String, juego: String): Boolean {
     Class.forName("oracle.jdbc.driver.OracleDriver")
     val conexion = DriverManager.getConnection(url, usuario, contraseña)
 
-
     val query = "SELECT * FROM Compras"
     val statement = conexion.prepareStatement(query)
 
@@ -424,14 +400,12 @@ fun devolverJuego(name: String, juego: String): Boolean {
                 sql.setString(1, juego)
                 sql.executeUpdate()
             }
-
             conexion.close()
             return true
         }
     }
     conexion.close()
     return false
-
 }
 fun listadejuegos():MutableList<String>{
     var lista = mutableListOf<String>()
@@ -443,17 +417,8 @@ fun listadejuegos():MutableList<String>{
     val statement = conexion.prepareStatement("Select titulo from Videojuegos")
     val resultSet = statement.executeQuery()
     while (resultSet.next()) {
-        val titulo = resultSet.getString("titulo")
+        var titulo = resultSet.getString("titulo")
         lista.add(titulo)
     }
     return  lista
 }
-//CREATE TABLE videojuegos (
-//    titulo VARCHAR2(255),
-//    desarrollador VARCHAR2(255),
-//    plataforma VARCHAR2(255),
-//    fecha_lanzamiento DATE,
-//    precio NUMBER(10,2)
-//);
-
-
