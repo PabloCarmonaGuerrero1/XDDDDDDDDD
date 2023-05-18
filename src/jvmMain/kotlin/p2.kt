@@ -521,12 +521,10 @@ fun actualizarVideojuego(titulo: String, desarrollador: String, plataforma: Stri
         declaracion.setString(5, titulo)
         declaracion.executeUpdate()
     } catch (e: ParseException) {
-        // Manejar el error de fecha incorrecta
         println("Error: Fecha de lanzamiento incorrecta. Asegúrate de que la fecha esté en el formato correcto (yyyy-MM-dd).")
         conexion.close()
         return false
     } catch (e: IllegalArgumentException) {
-        // Manejar el error de valor no válido en fechaLanzamiento
         println("Error: Valor no válido en fecha de lanzamiento.")
         conexion.close()
         return false

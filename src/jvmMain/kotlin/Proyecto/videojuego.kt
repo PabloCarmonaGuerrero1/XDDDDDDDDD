@@ -1,11 +1,10 @@
 package Proyecto
 
 class videojuego{
-    var nombre = ""
-    var creador = ""
-    var anyo = ""
+    var titulo = ""
+    var plataforma = ""
+    var desarrollador = ""
     var precio = 0.0
-    var descripcion = ""
-    var genero = ""
+    var fecha_lanzamiento = ""
+
 }
-//precio , descripcion , genero
