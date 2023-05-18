@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import java.sql.DriverManager
 import java.sql.Date
 import java.text.ParseException
 import java.text.SimpleDateFormat
-
 fun main()  = application {
     Window(onCloseRequest = ::exitApplication) {
         App()
@@ -56,6 +56,7 @@ fun App() {
                         value = contraseña,
                         onValueChange = { contraseña = it },
                         label = { Text("Contraseña") },
+                        visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Button(onClick = { ic = TiendaVideojuegosBD().iniciarsesion(usuario,contraseña) ;  contadorclicks++ ; registro=true }) {
@@ -135,12 +136,14 @@ fun App() {
                         value = contraseña,
                         onValueChange = { contraseña = it },
                         label = { Text("Contraseña") },
+                        visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     OutlinedTextField(
                         value = repetir,
                         onValueChange = { repetir = it },
                         label = { Text("Repetir contraseñna") },
+                        visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Button(onClick = { registrado = TiendaVideojuegosBD().crearUsuario(usuario,contraseña,repetir) ; registro = true }) {
