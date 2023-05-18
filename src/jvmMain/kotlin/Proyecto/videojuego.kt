@@ -1,10 +1,6 @@
 package Proyecto
 
-class videojuego{
-    var titulo = ""
-    var plataforma = ""
-    var desarrollador = ""
-    var precio = 0.0
-    var fecha_lanzamiento = ""
+import java.util.Date
 
+class videojuego(titulo:String,plataforma:String,desarrollador:String,precio:Double,fecha:Date){
 }
