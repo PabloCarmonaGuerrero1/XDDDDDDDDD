@@ -164,11 +164,9 @@ class TiendaVideojuegosBD() {
             declaracion.setString(5, titulo)
             declaracion.executeUpdate()
         } catch (e: ParseException) {
-            println("Error: Fecha de lanzamiento incorrecta. Asegúrate de que la fecha esté en el formato correcto (yyyy-MM-dd).")
             conexion.close()
             return false
         } catch (e: IllegalArgumentException) {
-            println("Error: Valor no válido en fecha de lanzamiento.")
             conexion.close()
             return false
         }
