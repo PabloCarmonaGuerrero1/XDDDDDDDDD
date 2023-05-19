@@ -1,0 +1,65 @@
+CREATE TABLE Usuarios (
+    name VARCHAR2(50),
+    password VARCHAR2(50),
+    CONSTRAINT pk_usuarios PRIMARY KEY (name)
+);
+
+
+CREATE TABLE COMPRAS(
+name VARCHAR2(50),
+titulo VARCHAR2(50)
+);
+
+CREATE TABLE videojuegos (
+titulo VARCHAR2(80),
+desarrollador VARCHAR2(80),
+plataforma VARCHAR2(80),
+fecha_lanzamiento DATE,
+precio NUMBER(10,2)
+);
+
+CREATE TABLE videojuegos2 (
+titulo VARCHAR2(80),
+desarrollador VARCHAR2(80),
+plataforma VARCHAR2(80),
+fecha_lanzamiento DATE,
+precio NUMBER(10,2)
+);
+
+INSERT INTO videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('The Legend of Zelda: Breath of the Wild', 'Nintendo', 'Nintendo Switch', TO_DATE('2017-03-03', 'YYYY-MM-DD'), 59.99);
+
+INSERT INTO videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Red Dead Redemption 2', 'Rockstar Games', 'PlayStation 4', TO_DATE('2018-10-26', 'YYYY-MM-DD'), 59.99);
+
+INSERT INTO videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Minecraft', 'Mojang Studios', 'PC', TO_DATE('2011-11-18', 'YYYY-MM-DD'), 26.95);
+
+INSERT INTO videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Super Mario Odyssey', 'Nintendo', 'Nintendo Switch', TO_DATE('2017-10-27', 'YYYY-MM-DD'), 59.99);
+
+INSERT INTO videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('The Witcher 3: Wild Hunt', 'CD Projekt', 'PlayStation 4', TO_DATE('2015-05-19', 'YYYY-MM-DD'), 39.99);
+
+INSERT INTO videojuegos (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Fortnite', 'Epic Games', 'Multiplataforma', TO_DATE('2017-07-25', 'YYYY-MM-DD'), 0);
+
+
+
+INSERT INTO videojuegos2 (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('The Legend of Zelda: Breath of the Wild', 'Nintendo', 'Nintendo Switch', TO_DATE('2017-03-03', 'YYYY-MM-DD'), 59.99);
+
+INSERT INTO videojuegos2 (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Red Dead Redemption 2', 'Rockstar Games', 'PlayStation 4', TO_DATE('2018-10-26', 'YYYY-MM-DD'), 59.99);
+
+INSERT INTO videojuegos2 (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Minecraft', 'Mojang Studios', 'PC', TO_DATE('2011-11-18', 'YYYY-MM-DD'), 26.95);
+
+INSERT INTO videojuegos2 (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Super Mario Odyssey', 'Nintendo', 'Nintendo Switch', TO_DATE('2017-10-27', 'YYYY-MM-DD'), 59.99);
+
+INSERT INTO videojuegos2 (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('The Witcher 3: Wild Hunt', 'CD Projekt', 'PlayStation 4', TO_DATE('2015-05-19', 'YYYY-MM-DD'), 39.99);
+
+INSERT INTO videojuegos2 (titulo, desarrollador, plataforma, fecha_lanzamiento, precio)
+VALUES ('Fortnite', 'Epic Games', 'Multiplataforma', TO_DATE('2017-07-25', 'YYYY-MM-DD'), 0);
